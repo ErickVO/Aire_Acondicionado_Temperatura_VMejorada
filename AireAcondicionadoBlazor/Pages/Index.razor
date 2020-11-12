@@ -1,0 +1,200 @@
+﻿@page "/"
+
+@using System.Threading; 
+
+<div class="card-body">
+   
+        <div class="form-group">
+            <label>Temperatura Aire:</label>
+            <input type="text" @bind ="Aire" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>Temperatura del Ambiente:</label>
+            <input type="text" @bind="Ambiente" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label>que se Abrio?</label>
+            <select @bind="Abierto" class="form-control">
+                <option value="0">Nada</option>
+                <option value="1">Puerta</option>
+                <option value="2">Ventana</option>
+                <option value="3">Ambos</option>
+            </select>
+        </div>
+
+        <div class="form-group form-inline">
+            <label>Encender</label>
+            <input type="checkbox" @bind="Encendido" class="form-control"/>
+        </div>
+</div>
+
+@code
+{
+    public double Aire { get; set; }
+    public double Ambiente { get; set; }
+    public string Abierto { get; set; }
+    public bool Encendido { get; set; }
+
+    public Timer Tiempo { get; set; }
+
+    double entero = 0, porcentaje = 0, r1 = 0, r2 = 0, cambioTemp = 0;
+
+    protected override void OnInitialized()
+    {
+        Aire = 0;
+        Ambiente = 30;
+        Abierto = "0";
+        Encendido = false;
+
+        Tiempo = new Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                Calcular();
+                StateHasChanged();
+            });
+        }, null, 1000, 2000);
+    }
+
+    void Calcular()
+    {
+        if (Encendido == true)
+        {
+            entero = Ambiente;
+
+            if (entero > Aire && Abierto == "0")
+            {
+                porcentaje = Ambiente - Aire;
+
+                porcentaje = porcentaje / 100;
+
+                r1 = Ambiente * porcentaje;
+                r2 = Aire * porcentaje;
+
+                cambioTemp = r1 - r2;
+
+                Ambiente = Ambiente - cambioTemp;
+
+                entero = Math.Truncate(Ambiente);
+
+                if (entero > Aire)
+                    Ambiente = Math.Round(Ambiente, 2);
+                else
+                    Ambiente = Math.Round(Ambiente);
+
+            }
+            else if (entero > Aire && Abierto == "1")
+            {
+                if (Ambiente < 30)
+                {
+                    porcentaje = Ambiente - Aire;
+
+                    porcentaje = porcentaje / 100;
+
+                    r1 = Ambiente * porcentaje;
+                    r2 = Aire * porcentaje;
+
+                    cambioTemp = (r1 - r2) / 0.7;
+
+                    Ambiente = Ambiente + cambioTemp;
+
+                    entero = Math.Truncate(Ambiente);
+
+                    Ambiente = Math.Round(Ambiente, 2);
+
+                    if (entero < 30)
+                        Ambiente = Math.Round(Ambiente, 2);
+                    else
+                        Ambiente = Math.Round(Ambiente);
+                }
+
+                //   MessageBox.Show("Ha llegado a la temperatura ambiente por favor cerrar la puerta");  
+            }
+            else if (entero > Aire && Abierto == "2")
+            {
+                if (Ambiente < 30)
+                {
+                    porcentaje = Ambiente - Aire;
+
+                    porcentaje = porcentaje / 100;
+
+                    r1 = Ambiente * porcentaje;
+                    r2 = Aire * porcentaje;
+
+                    cambioTemp = (r1 - r2) / 0.8;
+
+                    Ambiente = Ambiente + cambioTemp;
+
+                    entero = Math.Truncate(Ambiente);
+
+                    if (entero < 30)
+                        Ambiente = Math.Round(Ambiente, 2);
+                    else
+                        Ambiente = Math.Round(Ambiente);
+
+                }
+
+                //  MessageBox.Show("Ha llegado a la temperatura ambiente por favor cerrar la puerta y la ventana");
+
+            }
+            else if (entero >= Aire && Abierto == "3")
+            {
+                if (Ambiente < 30)
+                {
+
+                    porcentaje = Ambiente - Aire;
+
+                    porcentaje = porcentaje / 100;
+
+                    r1 = Ambiente * porcentaje;
+                    r2 = Aire * porcentaje;
+
+                    cambioTemp = (r1 - r2) / 0.56;
+
+                    Ambiente = Ambiente + cambioTemp;
+
+                    entero = Math.Truncate(Ambiente);
+
+                    if (entero < 30)
+                        Ambiente = Math.Round(Ambiente, 2);
+                    else
+                        Ambiente = Math.Round(Ambiente);
+
+                }
+
+                //   MessageBox.Show("Ha llegado a la temperatura ambiente por favor cerrar la puerta y la ventana");
+
+            }
+            else if (entero == Aire && Abierto == "0")
+            {
+                if (Ambiente <= 30)
+                {
+
+                    porcentaje = Ambiente - Aire;
+
+                    porcentaje = porcentaje / 100;
+
+                    r1 = Ambiente * porcentaje;
+                    r2 = Aire * porcentaje;
+
+                    cambioTemp = (r1 - r2) / 0.9;
+
+                    Ambiente = Ambiente + cambioTemp;
+
+                    entero = Math.Truncate(Ambiente);
+
+                    if (entero < 30)
+                        Ambiente = Math.Round(Ambiente, 2);
+                    else
+                        Ambiente = Math.Round(Ambiente);
+
+                }
+
+                //   MessageBox.Show("Ha llegado a la temperatura ambiente por favor cerrar la puerta y la ventana");
+            }
+        }
+
+    }
+}
